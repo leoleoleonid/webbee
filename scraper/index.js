@@ -2,43 +2,45 @@ import puppeteer from 'puppeteer';
 import cheerio from "cheerio";
 import {saveToDb} from "../models/LinkedinUsers.js";
 
+
+//TODO to config or to DB
 const pagesToScrape = [
-    // {
-    //     name: "Rajia Abdelaziz",
-    //     url: "https://www.linkedin.com/in/rajiaabdelaziz"
-    // },
-    // {
-    //     name: "Darian Bhathena",
-    //     url: "https://www.linkedin.com/in/darian-bhathena/"
-    // },
-    // {
-    //     name: "Danilo Lucari",
-    //     url: "https://www.linkedin.com/in/danilolucari/"
-    // },
-    // {
-    //     name: "Nicklas Gellner",
-    //     url: "https://www.linkedin.com/in/ngellner/"
-    // },
-    // {
-    //     name: "Mathias Sixten Pedersen",
-    //     url: "https://www.linkedin.com/in/sixped/"
-    // },
-    // {
-    //     name: "David Ezequiel Granados",
-    //     url: "https://www.linkedin.com/in/davidezequielgranados/"
-    // },
-    // {
-    //     name: "Andrej Vajagic",
-    //     url: "https://www.linkedin.com/in/andrejvajagic/"
-    // },
-    // {
-    //     name: "SAHIL BHATIYA",
-    //     url: "https://www.linkedin.com/in/sahilbhatiya/"
-    // },
-    // {
-    //     name: "Sten Roger Sandvik",
-    //     url: "https://www.linkedin.com/in/stenrs/"
-    // },
+    {
+        name: "Rajia Abdelaziz",
+        url: "https://www.linkedin.com/in/rajiaabdelaziz"
+    },
+    {
+        name: "Darian Bhathena",
+        url: "https://www.linkedin.com/in/darian-bhathena/"
+    },
+    {
+        name: "Danilo Lucari",
+        url: "https://www.linkedin.com/in/danilolucari/"
+    },
+    {
+        name: "Nicklas Gellner",
+        url: "https://www.linkedin.com/in/ngellner/"
+    },
+    {
+        name: "Mathias Sixten Pedersen",
+        url: "https://www.linkedin.com/in/sixped/"
+    },
+    {
+        name: "David Ezequiel Granados",
+        url: "https://www.linkedin.com/in/davidezequielgranados/"
+    },
+    {
+        name: "Andrej Vajagic",
+        url: "https://www.linkedin.com/in/andrejvajagic/"
+    },
+    {
+        name: "SAHIL BHATIYA",
+        url: "https://www.linkedin.com/in/sahilbhatiya/"
+    },
+    {
+        name: "Sten Roger Sandvik",
+        url: "https://www.linkedin.com/in/stenrs/"
+    },
     {
         name: "Alex Ghattas",
         url: "https://www.linkedin.com/in/alexghattas"
@@ -61,12 +63,13 @@ const delay = (time) => {
     })
 }
 export const job = async () => {
-    //TODO to separate com
+    //TODO to separate config.js + config validation
     const email = process.env.EMAIL;
     const pass = process.env.PASS;
 
     puppeteer.launch({headless: false})
         .then(async (browser) => {
+            //TODO can have same browser instance for all jobs
             let page = await browser.newPage()
             await page.setViewport({width: 1366, height: 768});
             await page.goto(LINKEDIN_LOGIN_URL, {waitUntil: 'domcontentloaded'})
@@ -80,7 +83,11 @@ export const job = async () => {
             }
 
             try {
+                //TODO need to find solution to handle capcha verification, now ypu can handle it in {headless: false} mode manly
                 await page.waitForSelector('.feed-identity-module')
+
+                //TODO add error handling
+                //TODO can create new page for each url
                 for (const {name, url} of pagesToScrape) {
                     await page.goto(url, { waitUntil: 'domcontentloaded' });
                     const content = await page.content()
